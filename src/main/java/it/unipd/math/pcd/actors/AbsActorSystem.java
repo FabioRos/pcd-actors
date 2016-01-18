@@ -56,9 +56,8 @@ public abstract class AbsActorSystem implements ActorSystem {
      */
     private Map<ActorRef<?>, Actor<?>> actors;
 
-    public AbsActorSystem(){
-        actors = new HashMap<>();
-    }
+    public AbsActorSystem(){actors = new HashMap<>();}
+
 
     @Override
     public ActorRef<? extends Message> actorOf(Class<? extends Actor> actor, ActorMode mode) {
@@ -86,6 +85,10 @@ public abstract class AbsActorSystem implements ActorSystem {
 
     protected abstract ActorRef createActorReference(ActorMode mode);
 
+
+    /**
+     * invoke stop() method on all actors in the map
+     */
     @Override
     public void stop() {
         for (Map.Entry<ActorRef<?>, Actor<?>> entry : actors.entrySet())
@@ -93,29 +96,39 @@ public abstract class AbsActorSystem implements ActorSystem {
         actors.clear();
     }
 
+    /**
+     * invoke stop() on the actor passed in params
+     * @oaram actor
+     */
+
     @Override
     public void stop(ActorRef<?> actor) {
-        synchronized (actor) {
-            if(((AbsActor) (actors.get(actor))).isStopped()) {
-                throw new NoSuchActorException();
-            }
-            else{
-                ((AbsActor) actors.get(actor)).stop();
-                actors.remove(actor);
-            }
+        AbsActor actr = (AbsActor)(actors.get(actor));
+        if(actr==null ||actr.isStopped()){
+            throw new NoSuchActorException();
+        }else {
+            actr.stop();
+            actors.remove(actor);
         }
     }
 
     /**
-     * return the actor associated to a given ActorRef
-     * @param actorRef type ActorRef
+     * returns the actor associated to a given ActorRef
+     * @param actorref type ActorRef
      * @return Actor type Actor
      * @throws NoSuchActorException
      */
-    public Actor<?> match(ActorRef<?> actorRef) throws NoSuchActorException {
-        Actor actor = actors.get(actorRef);
+    public Actor<?> getActorFromActorRef(ActorRef<?> actorref) throws NoSuchActorException {
+        Actor actor = actors.get(actorref);
         if (actor == null)
             throw new NoSuchActorException();
         return actor;
     }
+
+
+    /**
+     * method that given a runnable execute them
+     * @param r type Runnable
+     */
+    public abstract void systemExecute(Runnable r);
 }

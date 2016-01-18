@@ -36,9 +36,12 @@
  * @since 1.0
  */
 package it.unipd.math.pcd.actors;
+
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
+import it.unipd.math.pcd.actors.impl.AbsMessage;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * Defines common properties of all actors.
  *
@@ -47,7 +50,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @since 1.0
  */
 public abstract class AbsActor<T extends Message> implements Actor<T> {
-
 
     /**
      * Self-reference of the actor
@@ -60,23 +62,15 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
     protected ActorRef<T> sender;
 
     /**
-     * Mailbox implemented using a thread safe Queue
+     * Mailbox implemented using a thread safe Queue    ADDED
      */
-    private ConcurrentLinkedQueue<Message> mailBox;
+    private MailBoxDaemon mailBox;
 
     /**
-     * Set true if the ActorSystem kill the process
+     * Set true if the ActorSystem kill the process ADDED
      */
-    private volatile boolean stopped;
+    private volatile boolean isStopped;
 
-
-    //__METHODS__
-
-    public AbsActor(){
-        mailBox= new ConcurrentLinkedQueue<>();
-        stopped = false;
-        new MailBoxDaemon().start();
-    }
 
     /**
      * Sets the self-referece.
@@ -84,76 +78,56 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
      * @param self The reference to itself
      * @return The actor.
      */
-    protected final Actor<T> setSelf(ActorRef<T> self) {
+    public final Actor<T> setSelf(ActorRef<T> self) {
         this.self = self;
         return this;
     }
 
     /**
-     * @param s
-     * set sender of current actor equals to s
+     * Constructor
      */
-    protected final void setSender(ActorRef<T> s) {
-        this.sender = s;
+    public AbsActor(){
+        mailBox= new MailBoxDaemon();
+        isStopped = false;
     }
 
 
-    @Override
-    public void receive(T message) {
-        enqueueMessage( message, null);
-    }
-    public void receive(T message, ActorRef sender) {
-        enqueueMessage( message, sender);
-    }
-
-    public synchronized boolean isStopped() {
-        return stopped;
+    public synchronized boolean isStopped(){
+        return isStopped;
     }
 
     public void stop() {
         synchronized (this) {
-            if (stopped) {
+            if (isStopped) {
                 throw new NoSuchActorException();
             }
-            this.stopped = true;
+            this.isStopped = true;
         }
     }
 
-
-
-    /**
-     * Add the message m to the mailbox
-     * @param m message
-     * @param sndr sender
-     * @throws NoSuchActorException even if it try to add a message when the actor is going stop
-     */
-    public synchronized void enqueueMessage( Message m, ActorRef sndr){
-        try {
-            if (isStopped() == true)
-                throw new NoSuchActorException();
-            mailBox.add(m);
-            sender=sndr;
-            mailBox.notify();
-        } catch (NoSuchActorException e) {
-            e.printStackTrace();
-        }
+    public void pushMessage(AbsMessage<T> message) {
+        mailBox.enqueueMessage(message);
     }
 
-
+    //Mailbox inner class
     protected class MailBoxDaemon extends Thread{
 
+        private ConcurrentLinkedQueue<AbsMessage<T>> private_mailbox;
+
         public MailBoxDaemon(){
+            private_mailbox=new ConcurrentLinkedQueue<>();
             setDaemon(true);
+            this.start();
         }
 
         @Override
         public void run() {
             try {
-                if (mailBox.isEmpty())
-                    synchronized (this) {
+                synchronized ( this) {
+                    if (private_mailbox.isEmpty())
                         this.wait();
-                    }
-                while (!mailBox.isEmpty()){
+                }
+                while (!private_mailbox.isEmpty()){
                     processMessage();
                 }
             } catch (InterruptedException e) {
@@ -162,15 +136,27 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
         }
 
         private void processMessage(){
-            synchronized (mailBox) {
-                Message m = mailBox.poll();
-                if (m != null) {
-                    //setSender(m.getSender());
-                    receive((T) m);
+            synchronized (private_mailbox) {
+                AbsMessage msg = private_mailbox.poll();
+                if (msg != null) {
+                    sender = (ActorRef<T>)(msg.getSender());
+                    receive((T) msg.getMessage());
                 }
             }
+        }
+        public synchronized void enqueueMessage(AbsMessage<T> message){
+                if (isStopped)
+                    throw new NoSuchActorException();
+
+                private_mailbox.add(message);
+                sender=message.getSender();
+                mailBox.notify();
 
         }
-    }
 
-}
+    }// MAILBOX_DAEMON CLASS END
+
+    /**
+     * Final users must implements receive(T message);
+     */
+}// ABS_ACTOR CLASS END

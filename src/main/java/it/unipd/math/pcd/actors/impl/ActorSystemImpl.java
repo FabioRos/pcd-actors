@@ -2,14 +2,18 @@ package it.unipd.math.pcd.actors.impl;
 
 import it.unipd.math.pcd.actors.AbsActorSystem;
 import it.unipd.math.pcd.actors.ActorRef;
+import it.unipd.math.pcd.actors.ActorSystem;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by fabioros on 15/01/16.
+ * Created by fabioros on 18/01/16.
  */
 public class ActorSystemImpl extends AbsActorSystem {
+
+    //TODO implementare tutto
+
     private ExecutorService e;
 
     /**
@@ -17,22 +21,23 @@ public class ActorSystemImpl extends AbsActorSystem {
      */
     public ActorSystemImpl() { e = Executors.newCachedThreadPool(); }
 
+
+    @Override
+    public void systemExecute(Runnable r) {
+        e.execute(r);
+    }
+
     /**
      * method to create new ActorRef
      * @param mode
      * @return ActorRef
      */
     @Override
-    protected ActorRef createActorReference(ActorMode mode)
-    {
+    protected ActorRef createActorReference(ActorMode mode) {
         if(mode == ActorMode.LOCAL) return new ActorRefLocal(this);
         else
             throw new IllegalArgumentException();
     }
 
-    /**
-     * execute the Runnable passed on a thread on the cached Thread Pool
-     * @param r type Runnable
-     */
-    public void systemExecute(Runnable r){e.execute(r);}
+
 }

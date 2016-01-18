@@ -47,8 +47,7 @@ package it.unipd.math.pcd.actors.exceptions;
  */
 public class NoSuchActorException extends RuntimeException {
 
-    public NoSuchActorException() {
-    }
+    public NoSuchActorException() {    }
 
     public NoSuchActorException(String message) {
         super(message);
