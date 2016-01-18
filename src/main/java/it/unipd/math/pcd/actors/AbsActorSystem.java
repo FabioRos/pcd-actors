@@ -95,8 +95,15 @@ public abstract class AbsActorSystem implements ActorSystem {
 
     @Override
     public void stop(ActorRef<?> actor) {
-        ((AbsActor)actors.get(actor)).stop();
-        actors.remove(actor);
+        synchronized (actor) {
+            if(((AbsActor) (actors.get(actor))).isStopped()) {
+                throw new NoSuchActorException();
+            }
+            else{
+                ((AbsActor) actors.get(actor)).stop();
+                actors.remove(actor);
+            }
+        }
     }
 
     /**

@@ -98,11 +98,19 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
     }
 
 
+    @Override
+    public void receive(T message) {
+        enqueueMessage( message, null);
+    }
+    public void receive(T message, ActorRef sender) {
+        enqueueMessage( message, sender);
+    }
+
     public synchronized boolean isStopped() {
         return stopped;
     }
 
-    public  void stop() {
+    public void stop() {
         synchronized (this) {
             if (stopped) {
                 throw new NoSuchActorException();
@@ -142,7 +150,9 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
         public void run() {
             try {
                 if (mailBox.isEmpty())
-                    this.wait();
+                    synchronized (this) {
+                        this.wait();
+                    }
                 while (!mailBox.isEmpty()){
                     processMessage();
                 }
