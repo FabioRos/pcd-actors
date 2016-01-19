@@ -19,7 +19,9 @@ public class ActorSystemImpl extends AbsActorSystem {
     /**
      * the constructor creates inizialize e to a new cached thread pool in order to execute all MailboxManager
      */
-    public ActorSystemImpl() { e = Executors.newCachedThreadPool(); }
+    public ActorSystemImpl() {
+        e = Executors.newCachedThreadPool();
+    }
 
 
     @Override

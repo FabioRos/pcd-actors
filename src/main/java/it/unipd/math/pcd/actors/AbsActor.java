@@ -122,16 +122,18 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
 
         @Override
         public void run() {
-            try {
-                synchronized ( this) {
-                    if (private_mailbox.isEmpty())
-                        this.wait();
+            while (true) {
+                try {
+                    synchronized (this) {
+                        if (private_mailbox.isEmpty())
+                            this.wait();
+                    }
+                    while (!private_mailbox.isEmpty()) {
+                        processMessage();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                while (!private_mailbox.isEmpty()){
-                    processMessage();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
 
@@ -149,7 +151,7 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
                     throw new NoSuchActorException();
 
                 private_mailbox.add(message);
-                sender=message.getSender();
+                sender = message.getSender();
                 mailBox.notify();
 
         }
