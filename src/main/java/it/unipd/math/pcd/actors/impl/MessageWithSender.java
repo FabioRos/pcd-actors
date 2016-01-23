@@ -9,12 +9,12 @@ import it.unipd.math.pcd.actors.Message;
 
 
 
-public final class AbsMessage<T extends Message> implements MessageI<T> {
+public final class MessageWithSender<T extends Message> implements MessageI<T> {
     private final T message;
     private final ActorRef<T> sender;
 
 
-    public AbsMessage(T message, ActorRef<T> sender) {
+    public MessageWithSender(T message, ActorRef<T> sender) {
         this.message = message;
         this.sender = sender;
     }

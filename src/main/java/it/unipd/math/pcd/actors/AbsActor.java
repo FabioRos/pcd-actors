@@ -38,18 +38,19 @@
 package it.unipd.math.pcd.actors;
 
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
-import it.unipd.math.pcd.actors.impl.AbsMessage;
+import it.unipd.math.pcd.actors.impl.MessageWithSender;
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Defines common properties of all actors.
  *
- * @author Riccardo Cardin
- * @version 1.0
+ * @author Fabio Ros
+ * @version 1.1
  * @since 1.0
  */
-public abstract class AbsActor<T extends Message> implements Actor<T> {
+public abstract class AbsActor<T extends Message> implements Actor<T>, Serializable {
 
     /**
      * Self-reference of the actor
@@ -64,7 +65,7 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
     /**
      * Mailbox implemented using a thread safe Queue    ADDED
      */
-    private MailBoxDaemon mailBox;
+    private transient MailBoxDaemon mailBox;
 
     /**
      * Set true if the ActorSystem kill the process ADDED
@@ -105,14 +106,18 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
         }
     }
 
-    public void pushMessage(AbsMessage<T> message) {
+    public void pushMessage(MessageWithSender<T> message) {
         mailBox.enqueueMessage(message);
     }
 
     //Mailbox inner class
+
+    /**
+     * The mailbox of the actor is a Daemon
+     */
     protected class MailBoxDaemon extends Thread{
 
-        private ConcurrentLinkedQueue<AbsMessage<T>> private_mailbox;
+        private ConcurrentLinkedQueue<MessageWithSender<T>> private_mailbox;
 
         public MailBoxDaemon(){
             private_mailbox=new ConcurrentLinkedQueue<>();
@@ -137,16 +142,24 @@ public abstract class AbsActor<T extends Message> implements Actor<T> {
             }
         }
 
+        /**
+         * This method take the first message of the mailbox, save sender reference and call the receive message
+         */
         private void processMessage(){
             synchronized (private_mailbox) {
-                AbsMessage msg = private_mailbox.poll();
+                MessageWithSender msg = private_mailbox.poll();
                 if (msg != null) {
                     sender = (ActorRef<T>)(msg.getSender());
                     receive((T) msg.getMessage());
                 }
             }
         }
-        public synchronized void enqueueMessage(AbsMessage<T> message){
+
+        /**
+         * This method enqueue the  {@code message} into current actor's mailbox
+         * @param message the message to enqueue in the mailbox
+         */
+        public synchronized void enqueueMessage(MessageWithSender<T> message){
                 if (isStopped)
                     throw new NoSuchActorException();
 

@@ -39,25 +39,27 @@ package it.unipd.math.pcd.actors;
 
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A map-based implementation of the actor system.
  *
- * @author Riccardo Cardin
- * @version 1.0
+ * @author Fabio Ros
+ * @version 1.1
  * @since 1.0
  */
-public abstract class AbsActorSystem implements ActorSystem {
+public abstract class AbsActorSystem implements ActorSystem, Serializable {
 
     /**
      * Associates every Actor created with an identifier.
      */
     private Map<ActorRef<?>, Actor<?>> actors;
 
-    public AbsActorSystem(){actors = new HashMap<>();}
-
+    public AbsActorSystem(){
+        actors = new HashMap<>();
+    }
 
     @Override
     public ActorRef<? extends Message> actorOf(Class<? extends Actor> actor, ActorMode mode) {
@@ -87,7 +89,7 @@ public abstract class AbsActorSystem implements ActorSystem {
 
 
     /**
-     * invoke stop() method on all actors in the map
+     * stops all actors in the map {@code actors}
      */
     @Override
     public void stop() {
@@ -97,14 +99,14 @@ public abstract class AbsActorSystem implements ActorSystem {
     }
 
     /**
-     * invoke stop() on the actor passed in params
-     * @oaram actor
+     * stops the passed {@code actor}
+     * @param actor the {@code actor} to stop
      */
 
     @Override
     public void stop(ActorRef<?> actor) {
         AbsActor actr = (AbsActor)(actors.get(actor));
-        if(actr==null ||actr.isStopped()){
+        if(actr==null || actr.isStopped()){
             throw new NoSuchActorException();
         }else {
             actr.stop();
@@ -114,21 +116,15 @@ public abstract class AbsActorSystem implements ActorSystem {
 
     /**
      * returns the actor associated to a given ActorRef
-     * @param actorref type ActorRef
+     * @param actorRef type ActorRef
      * @return Actor type Actor
-     * @throws NoSuchActorException
+     * @throws NoSuchActorException if the referenced {@code actor} is going to stop
      */
-    public Actor<?> getActorFromActorRef(ActorRef<?> actorref) throws NoSuchActorException {
-        Actor actor = actors.get(actorref);
+    public Actor<?> getActorFromActorRef(ActorRef<?> actorRef) throws NoSuchActorException {
+        Actor actor = actors.get(actorRef);
         if (actor == null)
             throw new NoSuchActorException();
         return actor;
     }
 
-
-    /**
-     * method that given a runnable execute them
-     * @param r type Runnable
-     */
-    public abstract void systemExecute(Runnable r);
 }

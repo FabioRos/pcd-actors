@@ -10,18 +10,17 @@ import it.unipd.math.pcd.actors.Message;
  */
 public abstract class AbsActorRef<T extends Message> implements ActorRef<T> {
 
+    /**
+     *
+     */
     protected final AbsActorSystem system;
 
     public AbsActorRef(ActorSystem system){ this.system = (AbsActorSystem)system; }
 
-
-    public void execute(Runnable r){
-        ((AbsActorSystem)system).systemExecute(r);
-    }
-
-
     @Override
     public int compareTo(ActorRef o) {
-        return (this == o)? 0:1;
+        if (this == o)
+            return 0;
+        return -1;
     }
 }

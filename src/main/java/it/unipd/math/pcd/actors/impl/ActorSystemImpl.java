@@ -12,26 +12,17 @@ import java.util.concurrent.Executors;
  */
 public class ActorSystemImpl extends AbsActorSystem {
 
-    //TODO implementare tutto
-
-    private ExecutorService e;
 
     /**
      * the constructor creates inizialize e to a new cached thread pool in order to execute all MailboxManager
      */
     public ActorSystemImpl() {
-        e = Executors.newCachedThreadPool();
     }
 
-
-    @Override
-    public void systemExecute(Runnable r) {
-        e.execute(r);
-    }
 
     /**
-     * method to create new ActorRef
-     * @param mode
+     * create new ActorRef with the selected mode
+     * @param mode sets Actor mode local or remote
      * @return ActorRef
      */
     @Override
