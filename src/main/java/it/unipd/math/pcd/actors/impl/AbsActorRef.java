@@ -6,13 +6,14 @@ import it.unipd.math.pcd.actors.ActorSystem;
 import it.unipd.math.pcd.actors.Message;
 
 /**
- * Created by fabioros on 18/01/16.
+ * Defines common properties of an ActorRef.
+ *
+ * @author Fabio Ros
+ * @version 1.0
+ * @since 1.0
  */
 public abstract class AbsActorRef<T extends Message> implements ActorRef<T> {
 
-    /**
-     *
-     */
     protected final AbsActorSystem system;
 
     public AbsActorRef(ActorSystem system){ this.system = (AbsActorSystem)system; }

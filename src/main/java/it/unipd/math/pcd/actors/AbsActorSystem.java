@@ -48,7 +48,7 @@ import java.util.Map;
  *
  * @author Fabio Ros
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
 public abstract class AbsActorSystem implements ActorSystem, Serializable {
 
@@ -115,7 +115,7 @@ public abstract class AbsActorSystem implements ActorSystem, Serializable {
     }
 
     /**
-     * returns the actor associated to a given ActorRef
+     * returns the actor associated to a given {@code ActorRef}.
      * @param actorRef type ActorRef
      * @return Actor type Actor
      * @throws NoSuchActorException if the referenced {@code actor} is going to stop

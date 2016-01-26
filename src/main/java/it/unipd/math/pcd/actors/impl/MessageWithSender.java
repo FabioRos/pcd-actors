@@ -4,9 +4,12 @@ import it.unipd.math.pcd.actors.ActorRef;
 import it.unipd.math.pcd.actors.Message;
 
 /**
- * Created by fabioros on 18/01/16.
+ * Implements a message with a sender.
+ *
+ * @author Fabio Ros
+ * @version 1.0
+ * @since 1.0
  */
-
 
 
 public final class MessageWithSender<T extends Message> implements MessageI<T> {

@@ -8,20 +8,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by fabioros on 18/01/16.
+ * Implements AbsActorSystem.
+ *
+ * @author Fabio Ros
+ * @version 1.0
+ * @since 1.0
  */
+
 public class ActorSystemImpl extends AbsActorSystem {
 
 
-    /**
-     * the constructor creates inizialize e to a new cached thread pool in order to execute all MailboxManager
-     */
-    public ActorSystemImpl() {
-    }
+    public ActorSystemImpl() {}
 
 
     /**
-     * create new ActorRef with the selected mode
+     * create new ActorRef with the given {@code mode}.
      * @param mode sets Actor mode local or remote
      * @return ActorRef
      */

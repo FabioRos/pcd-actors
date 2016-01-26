@@ -48,7 +48,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author Fabio Ros
  * @version 1.1
- * @since 1.0
+ * @since 1.1
  */
 public abstract class AbsActor<T extends Message> implements Actor<T>, Serializable {
 

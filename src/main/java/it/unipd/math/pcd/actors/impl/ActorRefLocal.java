@@ -2,14 +2,20 @@ package it.unipd.math.pcd.actors.impl;
 
 import it.unipd.math.pcd.actors.*;
 
+
 /**
- *  A local implementation of AbsActorRef
+ * Defines local implementation of AbsActorRef.
+ *
+ * @author Fabio Ros
+ * @version 1.1
+ * @since 1.1
  */
+
 public class ActorRefLocal<T extends Message> extends AbsActorRef<T> {
 
 
     public ActorRefLocal(ActorSystem system){
-        super((AbsActorSystem)system);
+        super(system);
     }
 
 
