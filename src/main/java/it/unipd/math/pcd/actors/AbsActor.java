@@ -40,7 +40,6 @@ package it.unipd.math.pcd.actors;
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
 import it.unipd.math.pcd.actors.impl.MessageWithSender;
 
-import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -50,7 +49,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @version 1.1
  * @since 1.1
  */
-public abstract class AbsActor<T extends Message> implements Actor<T>, Serializable {
+public abstract class AbsActor<T extends Message> implements Actor<T> {
 
     /**
      * Self-reference of the actor

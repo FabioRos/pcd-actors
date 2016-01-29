@@ -39,7 +39,6 @@ package it.unipd.math.pcd.actors;
 
 import it.unipd.math.pcd.actors.exceptions.NoSuchActorException;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ import java.util.Map;
  * @version 1.1
  * @since 1.1
  */
-public abstract class AbsActorSystem implements ActorSystem, Serializable {
+public abstract class AbsActorSystem implements ActorSystem {
 
     /**
      * Associates every Actor created with an identifier.
